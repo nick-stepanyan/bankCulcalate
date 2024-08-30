@@ -27,16 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const now = new Date();
+        const daysInYear = isLeapYear(now.getFullYear()) ? 366 : 365;
+        const dailyInterestRate = (amount / daysInYear) * (rate / 100); // сумма в рублях за один день
+
         let currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         let nonCompoundedInterest = 0;
         let compoundedAmount = amount;
 
         for (let i = 0; i < months; i++) {
             const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-            const daysInYear = isLeapYear(currentDate.getFullYear()) ? 366 : 365;
-            const monthlyInterest = (compoundedAmount * (rate / 100)) / daysInYear * daysInMonth;
-            nonCompoundedInterest += (amount * (rate / 100)) / daysInYear * daysInMonth;
-            compoundedAmount += monthlyInterest;
+            const monthlyInterest = dailyInterestRate * daysInMonth; // проценты за месяц на текущую сумму
+            nonCompoundedInterest += dailyInterestRate * daysInMonth; // проценты без капитализации
+            compoundedAmount += monthlyInterest; // добавляем проценты к сумме для следующего месяца
             currentDate.setMonth(currentDate.getMonth() + 1);
         }
 
@@ -44,9 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         capitalizationMonths2.textContent = months;
 
         const daysInCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-        const daysInCurrentYear = isLeapYear(now.getFullYear()) ? 366 : 365;
-        const dailyInterest = (amount * (rate / 100)) / daysInCurrentYear;
-        const monthlyInterest = dailyInterest * daysInCurrentMonth;
+        const dailyInterest = dailyInterestRate; // сумма за один день
+        const monthlyInterest = dailyInterestRate * daysInCurrentMonth; // сумма за текущий месяц
 
         dailyInterestOutput.value = dailyInterest.toFixed(2) + ' руб.';
         monthlyInterestOutput.value = monthlyInterest.toFixed(2) + ' руб.';
